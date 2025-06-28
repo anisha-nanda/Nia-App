@@ -1,5 +1,75 @@
--- 1. USERS table
-CREATE TABLE tribe_users (
+--NIA STUDIO
+
+create table studio_users(
+ id INT PRIMARY KEY,
+ name VARCHAR,
+ phone VARCHAR,
+ location VARCHAR
+ );
+
+CREATE TABLE sellers (
+    seller_id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE REFERENCES users(id),
+    kyc_status VARCHAR(20) CHECK (kyc_status IN ('Pending', 'Verified', 'Rejected')),
+    pickup_address VARCHAR(255),
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
+    radius_km INT DEFAULT 10,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(100),
+    subcategory VARCHAR(100),
+    title VARCHAR(150),
+    description TEXT,
+    condition VARCHAR(20) CHECK (condition IN ('New', 'Used')),
+    price DECIMAL(10,2),
+    availability BOOLEAN
+);
+
+ create table inventory(
+ inventory_id INT PRIMARY KEY,
+ seller_id INT,
+ product_id INT,
+ quantity_available INT,
+ location VARCHAR,
+ latitude DECIMAL(9,6),
+ longitude DECIMAL(9,6),
+ created_at TIMESTAMP DEFAULT NOW()
+ );
+ create table orders(
+ id INT PRIMARY KEY,
+ user_id INT,
+ inventory_id INT,
+ quantity INT,
+ total_amount DECIMAL,
+ payment_method VARCHAR,
+ status VARCHAR,
+ created_at TIMESTAMP
+ );
+ create table studio_reservations(
+ id INT PRIMARY KEY,
+ user_id INT,
+ inventory_id INT,
+ reservation_deposit DECIMAL,
+ due_time TIMESTAMP,
+ refund_percentage DECIMAL
+ );
+ create table studio_payments(
+ id INT PRIMARY KEY,
+ user_id INT,
+ order_id INT,
+ method VARCHAR,
+ amount DECIMAL,
+ status VARCHAR
+ );
+
+ --NIA TRIBE
+ -- 1. USERS table
+CREATE TABLE users_tribe (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
     phone VARCHAR(15),
@@ -40,6 +110,35 @@ CREATE TABLE tribe_applications (
     status VARCHAR(20),
     applied_date TIMESTAMP DEFAULT NOW()
 );
+ CREATE TABLE application_status_history(
+    history_id INT PRIMARY KEY;
+    application_id INT;
+    status VARCHAR(20) CHECK (status IN ('Applied','Viewed','Interviewed','Offered', 'Hired', 'Rejected')),
+    changed_at TIMESTAMP,
+    changed_by INT 
+ );
+ CREATE TABLE courses(
+    id INT PRIMARY KEY,
+    title VARCHAR,
+    provider VARCHAR,
+    content_links TEXT,
+    duration VARCHAR,
+    fees DECIMAL
+ );
+ CREATE TABLE enrollments(
+    id INT PRIMARY KEY,
+    user_id INT,
+    course_id INT,
+    progress VARCHAR
+ );
+
+ CREATE TABLE mood_entries(
+    id INT PRIMARY KEY,
+    user_id INT,
+    course_id INT,
+    progress VARCHAR,
+    description TEXT
+ );
 -- 1. IDENTIFICATION table
 CREATE TABLE identification (
     id SERIAL PRIMARY KEY,
@@ -71,74 +170,18 @@ CREATE TABLE completed_jobs (
     completed_date TIMESTAMP DEFAULT NOW()
 );
 
-create table studio_users(
- id INT PRIMARY KEY,
- name VARCHAR,
- phone VARCHAR,
- location VARCHAR
- );
--- Sellers table (PostgreSQL-compatible)
-CREATE TABLE sellers (
-    seller_id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES users(id),
-    kyc_status VARCHAR(20) CHECK (kyc_status IN ('Pending', 'Verified', 'Rejected')),
-    pickup_address VARCHAR(255),
-    latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6),
-    radius_km INT DEFAULT 10,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+--NIA NEST
 
--- Products table (PostgreSQL-compatible)
-CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    category VARCHAR(100),
-    subcategory VARCHAR(100),
-    title VARCHAR(150),
-    description TEXT,
-    condition VARCHAR(20) CHECK (condition IN ('New', 'Used')),
-    price DECIMAL(10,2),
-    availability BOOLEAN
-);
-
- create table _crypto_aead_det_encryptinventory(
- inventory_id INT PRIMARY KEY,
- seller_id INT,
- product_id INT,
- quantity_available INT,
- location VARCHAR,
- latitude DECIMAL(9,6),
- longitude DECIMAL(9,6),
- created_at TIMESTAMP DEFAULT NOW()
+--NIA NEST
+ CREATE TABLE nest_users (
+    id INT PRIMARY KEY,
+    name VARCHAR,
+    phone VARCHAR,
+    gender VARCHAR,
+    dietary_preference VARCHAR,
+    location VARCHAR,
+    authentication_status BOOLEAN
  );
- create table orders(
- id INT PRIMARY KEY,
- user_id INT,
- inventory_id INT,
- quantity INT,
- total_amount DECIMAL,
- payment_method VARCHAR,
- status VARCHAR,
- created_at TIMESTAMP
- );
- create table studio_reservations(
- id INT PRIMARY KEY,
- user_id INT,
- inventory_id INT,
- reservation_deposit DECIMAL,
- due_time TIMESTAMP,
- refund_percentage DECIMAL
- );
- create table studio_payments(
- id INT PRIMARY KEY,
- user_id INT,
- order_id INT,
- method VARCHAR,
- amount DECIMAL,
- status VARCHAR
- );
- 
-
  CREATE TABLE pg_providers (
     provider_id SERIAL PRIMARY KEY,
     user_id INT UNIQUE REFERENCES users(id),
@@ -192,4 +235,7 @@ CREATE TABLE payments (
     status VARCHAR(20),
     timestamp TIMESTAMP DEFAULT NOW()
 );
+
+
+
 
