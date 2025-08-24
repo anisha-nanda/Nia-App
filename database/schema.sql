@@ -27,6 +27,7 @@ CREATE TABLE products (
     description TEXT,
     condition VARCHAR(20) CHECK (condition IN ('New', 'Used')),
     price DECIMAL(10,2),
+    financing_option BOOLEAN,
     availability BOOLEAN
 );
 
